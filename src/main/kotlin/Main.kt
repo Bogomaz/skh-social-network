@@ -2,7 +2,7 @@ package ru.netology
 
 fun main() {
     val testPost1 = Post(
-        id = 1,
+        id = 0,
         ownerId = 10,
         fromId = 2,
         date = 1759092958,
@@ -33,7 +33,7 @@ fun main() {
     )
 
     val testPost2 = Post(
-        id = 2,
+        id = 0,
         ownerId = 20,
         fromId = 5,
         date = 1759093999,
@@ -64,7 +64,7 @@ fun main() {
     )
 
     val testPost3 = Post(
-        id = 3,
+        id = 0,
         ownerId = 30,
         fromId = 8,
         date = 1759094999,
@@ -94,7 +94,7 @@ fun main() {
         isFavorite = true
     )
     val testPost4 = Post(
-        id = 4,
+        id = 0,
         ownerId = 40,
         fromId = 12,
         date = 1759095999,
@@ -125,7 +125,7 @@ fun main() {
     )
 
     val testPost5 = Post(
-        id = 5,
+        id = 0,
         ownerId = 50,
         fromId = 15,
         date = 1759096999,
@@ -156,7 +156,7 @@ fun main() {
     )
 
     val testPost6 = Post(
-        id = 3,
+        id = 0,
         ownerId = 30,
         fromId = 8,
         date = 1759095011,
