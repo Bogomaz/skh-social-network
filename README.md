@@ -1,1 +1,4 @@
-# skh-social-network
+Создан Data-класс Post (и классы, вложенные в Post).
+Объект WallService, который хранит посты в массиве и выполняет операции над ними.
+В объекте WallService реализованы методы add, update и clear.
+Созданы тесты add и update.
