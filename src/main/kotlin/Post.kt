@@ -44,7 +44,7 @@ data class Views(
 // Опциональный enum для post_type
 enum class PostType {
     POST,
-    COPY,
+    COMMENT,
     REPLY,
     POSTPONE,
     SUGGEST

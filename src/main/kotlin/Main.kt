@@ -59,7 +59,7 @@ fun main() {
         views = Views(
             count = 10
         ),
-        postType = PostType.COPY,
+        postType = PostType.COMMENT,
         isFavorite = false
     )
 
