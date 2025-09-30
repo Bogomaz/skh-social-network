@@ -192,8 +192,6 @@ fun main() {
     println(WallService.add(testPost4))
     println(WallService.add(testPost5))
 
-    println("Hello, world")
-
 
     WallService.update(testPost6);
 
