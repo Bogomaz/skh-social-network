@@ -24,4 +24,8 @@ object WallService {
         return false
     }
 
+    fun clear() {
+        posts = emptyArray()
+        current_id = 1
+    }
 }
