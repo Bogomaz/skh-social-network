@@ -31,23 +31,23 @@ fun main() {
                     player = "https://vkvideo.ru/video-158579430_456262028"
                 )
             ),
+            FileAttachment(
+                file = File(
+                    id = 1,
+                    ownerId = 1, // идентификатор владельца видео
+                    title = "Abronia graminea", // название
+                    size = 98_304, //Размер файла в байтах.
+                    ext = "webp", // Расширение файла.
+                    url = "https://terrarium-online.com/wp-content/uploads/2023/02/abronia-graminea.webp", // Адрес файла, по которому его можно загрузить.
+                    date = 1759661150, // Дата добавления в формате Unixtime
+                )
+            ),
             StickerAttachment(
                 sticker = Sticker(
                     productId = 1610,
                     stickerId = 76072,
                     animationUrl = "https://vk.com/sticker/3-76072.json",
                     isAllowed = true
-                )
-            ),
-            FileAttachment(
-                file = File(
-                    id = 1,
-                    owner_id = 1, // идентификатор владельца видео
-                    title = "Abronia graminea", // название
-                    size = 98_304, //Размер файла в байтах.
-                    ext = "webp", // Расширение файла.
-                    url = "https://terrarium-online.com/wp-content/uploads/2023/02/abronia-graminea.webp", // Адрес файла, по которому его можно загрузить.
-                    date = 1759661150, // Дата добавления в формате Unixtime
                 )
             ),
             GeotagAttachment(

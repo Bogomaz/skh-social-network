@@ -103,7 +103,7 @@ class WallServiceTest {
                         FileAttachment(
                             file = File(
                                 id = 1,
-                                owner_id = 1, // идентификатор владельца видео
+                                ownerId = 1, // идентификатор владельца видео
                                 title = "Abronia graminea", // название
                                 size = 98_304, //Размер файла в байтах.
                                 ext = "webp", // Расширение файла.

@@ -5,7 +5,7 @@ import ru.netology.File
 class FileTest {
     val fileFullFilled = File(
         id = 1,
-        owner_id = 1, // идентификатор владельца видео
+        ownerId = 1, // идентификатор владельца видео
         title = "Abronia graminea", // название
         size = 98_304, //Размер файла в байтах.
         ext = "webp", // Расширение файла.
@@ -15,7 +15,7 @@ class FileTest {
 
     val fileNullTitle = File(
         id = 1,
-        owner_id = 1, // идентификатор владельца видео
+        ownerId = 1, // идентификатор владельца видео
         title = null, // название
         size = 98_304, //Размер файла в байтах.
         ext = "webp", // Расширение файла.
@@ -31,7 +31,7 @@ class FileTest {
 
     @Test
     fun getOwner_id() {
-        val result = fileFullFilled.owner_id;
+        val result = fileFullFilled.ownerId;
         assertEquals(1, result)
     }
 
