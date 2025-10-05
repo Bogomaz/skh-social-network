@@ -9,11 +9,12 @@ data class Post(
     val replyOwnerId: Int = 0, //id владельца записи, в ответ на которую была оставлена текущая.
     val replyPostId: Int = 0, //id записи, в ответ на которую была оставлена текущая.
     val friendsOnly: Boolean = true, // 1, если запись видна только друзьям.
+    val attachments: List<Attachment>? = null, // медаивложения
     val comments: Comments? = null, // комментарии
     val likes: Likes? = null, // лайки
     val reposts: Reposts? = null, // репосты
     val views: Views? = null, // просмотры
-    val postType: PostType = PostType.POST, //Тип записи, может принимать следующие значения: post, copy, reply, postpone, suggest.
+    val postType: PostType = PostType.POST, //Тип записи, может принимать следующие значения: post, repost, comment, reply, postpone, suggest.
     val isFavorite: Boolean = false // true, если объект добавлен в закладки у текущего пользователя
 )
 
@@ -44,6 +45,7 @@ data class Views(
 // Опциональный enum для post_type
 enum class PostType {
     POST,
+    REPOST,
     COMMENT,
     REPLY,
     POSTPONE,
