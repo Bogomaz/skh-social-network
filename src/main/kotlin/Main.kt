@@ -29,17 +29,19 @@ fun main() {
                 video = Video(
                     id = 1,
                     ownerId = 1,
-                    title = "A Funny Video",
-                    duration = 30,
-                    views = 12
+                    title = "Cats",
+                    description = "Funny cats",
+                    duration =30,
+                    views = 2_900_000,
+                    player = "https://vkvideo.ru/video-158579430_456262028"
                 )
             ),
             StickerAttachment(
                 sticker = Sticker(
-                    product_id = 1, //Идентификатор набора
-                    sticker_id = 1, // Идентификатор стикера
-                    animation_url = "https://vk.com/some_sticker_link", // URL анимации стикера
-                    is_allowed = true // Информация о том, доступен ли стикер.
+                    productId = 1, //Идентификатор набора
+                    stickerId = 1, // Идентификатор стикера
+                    animationUrl = "https://vk.com/some_sticker_link", // URL анимации стикера
+                    isAllowed = true // Информация о том, доступен ли стикер.
                 )
             ),
             FileAttachment(
@@ -62,8 +64,8 @@ fun main() {
                     ),
                     place = Place(
                         type = 1, //тип чекина
-                        group_id = 1, //идентификатор сообщества
-                        group_photo = "https://vk.com/mini-img", //URL миниатюры главной фотографии сообщества
+                        groupId = 1, //идентификатор сообщества
+                        groupPhoto = "https://vk.com/mini-img", //URL миниатюры главной фотографии сообщества
                         checkins = 19, //количество чекинов
                         updated = 1759092958, // время последнего чекина в Unixtime;
                         address = 334 // адрес.
