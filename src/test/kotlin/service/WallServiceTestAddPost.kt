@@ -1,13 +1,11 @@
 package service
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.netology.exception.PostNotFoundException
-import ru.netology.model.Comment
 import ru.netology.model.Comments
 import ru.netology.model.Coordinates
 import ru.netology.model.File
@@ -30,7 +28,12 @@ import ru.netology.model.Views
 import ru.netology.service.WallService
 import java.util.stream.Stream
 
-class WallServiceTest {
+class WallServiceTestAddPost {
+    @BeforeEach
+    fun clearBeforeTest() {
+        WallService.clear()
+    }
+
     companion object {
         @JvmStatic
         fun postsToAdding(): Stream<Arguments> = Stream.of(
@@ -210,110 +213,10 @@ class WallServiceTest {
         )
     }
 
-    @BeforeEach
-    fun clearBeforeTest() {
-        WallService.clear()
-    }
-
     @ParameterizedTest
     @MethodSource("postsToAdding")
     fun addPost(post: Post, unxpected: Int){
         val result = WallService.add(post)
         Assertions.assertNotEquals(unxpected, result.id)
-    }
-
-
-    //изменяем пост с существующим id, возвращается true;
-    @Test
-    fun updateExist() {
-        val post = Post(
-            id = 1,
-            ownerId = 1,
-            fromId = 1,
-            date = 1759092958,
-            text = "Post 1 content.",
-            replyOwnerId = 1,
-            replyPostId = 1,
-            friendsOnly = true,
-            comments = Comments(
-                count = 1,
-                canPost = true,
-                groupsCanPost = true
-            ),
-            likes = Likes(
-                count = 0,
-                userLikes = true,
-                canLike = true,
-                canPublish = true
-            ),
-            reposts = Reposts(
-                count = 4,
-                userReposted = true
-            ),
-            views = Views(
-                count = 10
-            ),
-            postType = PostType.POST,
-            isFavorite = true
-        );
-        WallService.add(post);
-        val result = WallService.update(post);
-        Assertions.assertEquals(true, result)
-    }
-
-    //изменяем пост с несуществующим id, возвращается false.
-    @Test
-    fun updateNonExist() {
-        val post = Post(
-            id = 1,
-            ownerId = 10,
-            fromId = 2,
-            date = 1759092958,
-            text = "Post 1 content.",
-            replyOwnerId = 2,
-            replyPostId = 5,
-            friendsOnly = true,
-            comments = Comments(
-                count = 3,
-                canPost = true,
-                groupsCanPost = false
-            ),
-            likes = Likes(
-                count = 2,
-                userLikes = true,
-                canLike = true,
-                canPublish = true
-            ),
-            reposts = Reposts(
-                count = 4,
-                userReposted = true
-            ),
-            views = Views(
-                count = 123
-            ),
-            postType = PostType.POST,
-            isFavorite = true
-        )
-        val result = WallService.update(post);
-        Assertions.assertEquals(false, result)
-    }
-
-    @Test
-    fun сreateCommentToExistingPost() {
-        WallService.clear()
-        val post = WallService.add(Post(text = "Test post"))
-        val comment = Comment(postId = post.id, text = "Test comment")
-        val result = WallService.createComment(post.id, comment)
-        Assertions.assertEquals("Test comment", result.text)
-        Assertions.assertTrue(result.id > 0)
-    }
-
-    @Test
-    fun сreateCommentToNotFoundedPost() {
-        WallService.clear()
-        val comment = Comment(postId = 999, text = "Should fail")
-        Assertions.assertThrows(PostNotFoundException::class.java) {
-            WallService.createComment(999, comment)
-        }
     }
 }
