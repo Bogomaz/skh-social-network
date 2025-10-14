@@ -1,4 +1,4 @@
-package ru.netology
+package ru.netology.model
 
 sealed class Attachment(val type: String)
 
@@ -61,7 +61,6 @@ data class Place(
     val address: Int // адрес.
 )
 
-// Опциональный enum для post_type
 enum class PlaceType {
     HOME,
     JOB,

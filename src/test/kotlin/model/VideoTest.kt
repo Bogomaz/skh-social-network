@@ -1,6 +1,8 @@
-import org.junit.jupiter.api.Assertions.*
+package model
+
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.netology.Video
+import ru.netology.model.Video
 
 class VideoTest {
     val videoFullFilled = Video(
@@ -25,54 +27,54 @@ class VideoTest {
     @Test
     fun getId() {
         val result = videoFullFilled.id;
-        assertEquals(1, result)
+        Assertions.assertEquals(1, result)
     }
 
     @Test
     fun getOwnerId() {
         val result = videoFullFilled.ownerId;
-        assertEquals(1, result)
+        Assertions.assertEquals(1, result)
     }
 
     @Test
     fun getTitleFilled() {
         val result = videoFullFilled.title;
-        assertEquals("Cats", result)
+        Assertions.assertEquals("Cats", result)
     }
     @Test
     fun getTitleNull() {
         val result = videoNullFilled.title;
-        assertEquals(null, result)
+        Assertions.assertEquals(null, result)
     }
 
     @Test
     fun getDescriptionFilled() {
         val result = videoFullFilled.description;
-        assertEquals("Funny cats", result)
+        Assertions.assertEquals("Funny cats", result)
     }
 
     @Test
     fun getDescriptionNull() {
         val result = videoNullFilled.description;
-        assertEquals(null, result)
+        Assertions.assertEquals(null, result)
     }
 
     @Test
     fun getDuration() {
         val result = videoFullFilled.duration;
-        assertEquals(30, result)
+        Assertions.assertEquals(30, result)
     }
 
     @Test
     fun getViews() {
         val result = videoFullFilled.views;
-        assertEquals(2_900_000, result)
+        Assertions.assertEquals(2_900_000, result)
     }
 
     @Test
     fun getPlayer() {
         val result = videoFullFilled.player;
-        assertEquals("https://vkvideo.ru/video-158579430_456262028", result)
+        Assertions.assertEquals("https://vkvideo.ru/video-158579430_456262028", result)
     }
 
 }

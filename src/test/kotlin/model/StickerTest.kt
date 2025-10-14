@@ -1,6 +1,8 @@
-import org.junit.jupiter.api.Assertions.*
+package model
+
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.netology.Sticker
+import ru.netology.model.Sticker
 
 class StickerTest {
     val stickerFullFilled = Sticker(
@@ -18,30 +20,30 @@ class StickerTest {
     @Test
     fun getProduct_id() {
         val result = stickerFullFilled.productId;
-        assertEquals(1610, result)
+        Assertions.assertEquals(1610, result)
     }
 
     @Test
     fun getSticker_id() {
         val result = stickerFullFilled.stickerId;
-        assertEquals(76072, result)
+        Assertions.assertEquals(76072, result)
     }
 
     @Test
     fun getAnimation_urlFiiled() {
         val result = stickerFullFilled.animationUrl;
-        assertEquals("https://vk.com/sticker/3-76072.json", result)
+        Assertions.assertEquals("https://vk.com/sticker/3-76072.json", result)
     }
     @Test
     fun getAnimation_urlNull() {
         val result = stickerNullAnimation.animationUrl;
-        assertEquals(null, result)
+        Assertions.assertEquals(null, result)
     }
 
     @Test
     fun is_allowed() {
         val result = stickerFullFilled.isAllowed;
-        assertEquals(true, result)
+        Assertions.assertEquals(true, result)
     }
 
 }

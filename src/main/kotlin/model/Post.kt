@@ -1,4 +1,4 @@
-package ru.netology
+package ru.netology.model
 
 data class Post(
     val id: Int = 0, // id записи
@@ -46,7 +46,6 @@ data class Views(
 enum class PostType {
     POST,
     REPOST,
-    COMMENT,
     REPLY,
     POSTPONE,
     SUGGEST

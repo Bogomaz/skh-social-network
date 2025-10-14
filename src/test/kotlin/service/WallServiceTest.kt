@@ -1,29 +1,33 @@
-import org.junit.jupiter.api.Assertions.*
+package service
+
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.netology.Comments
-import ru.netology.Coordinates
-import ru.netology.File
-import ru.netology.FileAttachment
-import ru.netology.Geotag
-import ru.netology.GeotagAttachment
-import ru.netology.Likes
-import ru.netology.Photo
-import ru.netology.PhotoAttachment
-import ru.netology.Place
-import ru.netology.PlaceType
-import ru.netology.Post
-import ru.netology.PostType
-import ru.netology.Reposts
-import ru.netology.Sticker
-import ru.netology.StickerAttachment
-import ru.netology.Video
-import ru.netology.VideoAttachment
-import ru.netology.Views
-import ru.netology.WallService
+import ru.netology.exception.PostNotFoundException
+import ru.netology.model.Comment
+import ru.netology.model.Comments
+import ru.netology.model.Coordinates
+import ru.netology.model.File
+import ru.netology.model.FileAttachment
+import ru.netology.model.Geotag
+import ru.netology.model.GeotagAttachment
+import ru.netology.model.Likes
+import ru.netology.model.Photo
+import ru.netology.model.PhotoAttachment
+import ru.netology.model.Place
+import ru.netology.model.PlaceType
+import ru.netology.model.Post
+import ru.netology.model.PostType
+import ru.netology.model.Reposts
+import ru.netology.model.Sticker
+import ru.netology.model.StickerAttachment
+import ru.netology.model.Video
+import ru.netology.model.VideoAttachment
+import ru.netology.model.Views
+import ru.netology.service.WallService
 import java.util.stream.Stream
 
 class WallServiceTest {
@@ -170,7 +174,7 @@ class WallServiceTest {
                     views = Views(
                         count = 123
                     ),
-                    postType = PostType.COMMENT,
+                    postType = PostType.REPOST,
                     isFavorite = true
                 ), 0
             ),
@@ -215,7 +219,7 @@ class WallServiceTest {
     @MethodSource("postsToAdding")
     fun addPost(post: Post, unxpected: Int){
         val result = WallService.add(post)
-        assertNotEquals(unxpected, result.id)
+        Assertions.assertNotEquals(unxpected, result.id)
     }
 
 
@@ -254,7 +258,7 @@ class WallServiceTest {
         );
         WallService.add(post);
         val result = WallService.update(post);
-        assertEquals(true, result)
+        Assertions.assertEquals(true, result)
     }
 
     //изменяем пост с несуществующим id, возвращается false.
@@ -291,6 +295,25 @@ class WallServiceTest {
             isFavorite = true
         )
         val result = WallService.update(post);
-        assertEquals(false, result)
+        Assertions.assertEquals(false, result)
+    }
+
+    @Test
+    fun сreateCommentToExistingPost() {
+        WallService.clear()
+        val post = WallService.add(Post(text = "Test post"))
+        val comment = Comment(postId = post.id, text = "Test comment")
+        val result = WallService.createComment(post.id, comment)
+        Assertions.assertEquals("Test comment", result.text)
+        Assertions.assertTrue(result.id > 0)
+    }
+
+    @Test
+    fun сreateCommentToNotFoundedPost() {
+        WallService.clear()
+        val comment = Comment(postId = 999, text = "Should fail")
+        Assertions.assertThrows(PostNotFoundException::class.java) {
+            WallService.createComment(999, comment)
+        }
     }
 }

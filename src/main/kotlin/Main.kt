@@ -1,7 +1,35 @@
 package ru.netology
 
+import ru.netology.exception.CommentNotFoundException
+import ru.netology.exception.PostNotFoundException
+import ru.netology.exception.ReasonNotFoundException
+import ru.netology.model.Comment
+import ru.netology.model.Comments
+import ru.netology.model.Coordinates
+import ru.netology.model.File
+import ru.netology.model.FileAttachment
+import ru.netology.model.Geotag
+import ru.netology.model.GeotagAttachment
+import ru.netology.model.Likes
+import ru.netology.model.Photo
+import ru.netology.model.PhotoAttachment
+import ru.netology.model.Place
+import ru.netology.model.PlaceType
+import ru.netology.model.Post
+import ru.netology.model.PostType
+import ru.netology.model.Reason
+import ru.netology.model.Report
+import ru.netology.model.Reposts
+import ru.netology.model.Sticker
+import ru.netology.model.StickerAttachment
+import ru.netology.model.Video
+import ru.netology.model.VideoAttachment
+import ru.netology.model.Views
+import ru.netology.service.WallService
+
 
 fun main() {
+
     val post = Post(
         id = 0,
         ownerId = 10,
@@ -39,7 +67,7 @@ fun main() {
                     size = 98_304, //Размер файла в байтах.
                     ext = "webp", // Расширение файла.
                     url = "https://terrarium-online.com/wp-content/uploads/2023/02/abronia-graminea.webp", // Адрес файла, по которому его можно загрузить.
-                    date = 1759661150, // Дата добавления в формате Unixtime
+                    date = 1759661150 // Дата добавления в формате Unixtime
                 )
             ),
             StickerAttachment(
@@ -90,5 +118,47 @@ fun main() {
         isFavorite = true
     )
 
-    println(WallService.add(post))
+    val addedPost = WallService.add(post)
+    println(addedPost)
+
+    val comment = Comment(
+        id = 0,
+        postId = addedPost.id, // Идентификатор поста
+        fromId = 1, //Идентификатор автора комментария
+        date = 1759661150, //Дата создания комментария в формате Unixtime
+        text = "It's cool!.", //Текст комментария
+        replyToUser = 12, //Идентификатор пользователя или сообщества, в ответ которому оставлен текущий комментарий (если применимо).
+        replyToComment = 0, // Идентификатор комментария, в ответ на который оставлен текущий (если применимо).
+        attachments = listOf(
+            PhotoAttachment(
+                photo = Photo(
+                    id = 1,
+                    ownerId = 1,
+                    photo130 = "https://terrarium-online.com/wp-content/uploads/2023/10/ushastyj-bananoed-465x260.jpg",
+                    photo604 = "https://terrarium-online.com/wp-content/uploads/2023/10/ushastyj-bananoed-1.jpg"
+                )
+            )
+        )
+    )
+
+    val report = Report(
+        id = 1,
+        commentId = 1,
+        ownerId = 2,
+        reason = 8
+    )
+
+    try {
+        println(WallService.createComment(comment.postId, comment))
+    } catch (e: PostNotFoundException) {
+        println(e.message)
+    }
+
+    try {
+        println(WallService.reportComment(report))
+    } catch (e: CommentNotFoundException) {
+        println(e.message)
+    }catch (e: ReasonNotFoundException){
+        println(e.message)
+    }
 }
