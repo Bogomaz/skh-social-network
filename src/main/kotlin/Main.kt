@@ -11,13 +11,14 @@ import ru.netology.model.FileAttachment
 import ru.netology.model.Geotag
 import ru.netology.model.GeotagAttachment
 import ru.netology.model.Likes
+import ru.netology.model.Note
 import ru.netology.model.Photo
 import ru.netology.model.PhotoAttachment
 import ru.netology.model.Place
 import ru.netology.model.PlaceType
 import ru.netology.model.Post
 import ru.netology.model.PostType
-import ru.netology.model.Reason
+import ru.netology.model.Privacy
 import ru.netology.model.Report
 import ru.netology.model.Reposts
 import ru.netology.model.Sticker
@@ -25,7 +26,9 @@ import ru.netology.model.StickerAttachment
 import ru.netology.model.Video
 import ru.netology.model.VideoAttachment
 import ru.netology.model.Views
+import ru.netology.service.NoteService
 import ru.netology.service.WallService
+import kotlin.Int
 
 
 fun main() {
@@ -38,7 +41,6 @@ fun main() {
         text = "Post 1 content.",
         replyOwnerId = 2,
         replyPostId = 5,
-        friendsOnly = true,
         attachments = listOf(
             PhotoAttachment(
                 photo = Photo(
@@ -96,26 +98,6 @@ fun main() {
                 )
             ),
         ),
-        comments = Comments(
-            count = 3,
-            canPost = true,
-            groupsCanPost = false
-        ),
-        likes = Likes(
-            count = 2,
-            userLikes = true,
-            canLike = true,
-            canPublish = true
-        ),
-        reposts = Reposts(
-            count = 4,
-            userReposted = true
-        ),
-        views = Views(
-            count = 123
-        ),
-        postType = PostType.POST,
-        isFavorite = true
     )
 
     val addedPost = WallService.add(post)
@@ -161,4 +143,27 @@ fun main() {
     }catch (e: ReasonNotFoundException){
         println(e.message)
     }
+
+    val note1 = Note(
+        id = 0,
+        ownerId = 10,
+        fromId = 10,
+        date = 1759092958,
+        text = "Это моя заметка. Комментируйте и читайте",
+        viewPrivacy = Privacy.HUMANS_ONLY,
+        comments = Comments(
+            count = 0, //Количество комментариев к записи
+            readCommentsCount = 0, //Количество прочитанных комментариев.
+            commentPrivacy = Privacy.HUMANS_ONLY, //Уровень доступа к комментированию заметки.
+            canClose = true, // может ли текущий пользователь закрыть комментарии к записи;
+            canOpen = false // может ли текущий пользователь открыть комментарии к записи.
+        ),
+        title = "Привет, Интернет!"
+    )
+
+    val service = NoteService<Note>()
+    val id = service.add(note1)
+    println(id)
+
+
 }

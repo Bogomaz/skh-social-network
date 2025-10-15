@@ -19,6 +19,7 @@ import ru.netology.model.Place
 import ru.netology.model.PlaceType
 import ru.netology.model.Post
 import ru.netology.model.PostType
+import ru.netology.model.Privacy
 import ru.netology.model.Reposts
 import ru.netology.model.Sticker
 import ru.netology.model.StickerAttachment
@@ -38,32 +39,51 @@ class WallServiceTestAddPost {
         @JvmStatic
         fun postsToAdding(): Stream<Arguments> = Stream.of(
             Arguments.of(
+                Post(), 0
+            ),
+            Arguments.of(
                 Post(
-                    id = 0,
+                    text = "Эй, привет!"
+                ), 0
+            ),
+            Arguments.of(
+                Post(
+                    ownerId = 21,
+                    fromId = 32,
+                    date = 1759095462,
+                    viewPrivacy = Privacy.USER_ONLY,
+                    text = "Просто оставлю это здесь!",
+                    postType = PostType.REPOST,
+                    isFavorite = true
+                ), 0
+            ),
+            Arguments.of(
+                Post(
                     ownerId = 1,
                     fromId = 1,
                     date = 1759092958,
-                    text = "Post 1 content.",
+                    text = "Первый пост на этой стене.",
                     replyOwnerId = 1,
                     replyPostId = 1,
-                    friendsOnly = true,
+                    viewPrivacy = Privacy.FRIENDS_OF_FRIENDS,
                     comments = Comments(
-                        count = 1,
-                        canPost = true,
-                        groupsCanPost = true
+                        count = 10,
+                        readCommentsCount = 5,
+                        commentPrivacy = Privacy.FRIENDS_ONLY,
+                        canClose = true,
+                        canOpen = true
                     ),
                     likes = Likes(
-                        count = 0,
-                        userLikes = true,
+                        count = 124,
+                        userLikes = false,
                         canLike = true,
                         canPublish = true
                     ),
                     reposts = Reposts(
-                        count = 4,
-                        userReposted = true
+                        count = 2,
                     ),
                     views = Views(
-                        count = 10
+                        count = 345
                     ),
                     postType = PostType.POST,
                     isFavorite = true
@@ -71,14 +91,12 @@ class WallServiceTestAddPost {
             ),
             Arguments.of(
                 Post(
-                    id = 0,
                     ownerId = 10,
                     fromId = 2,
                     date = 1759092958,
-                    text = "Post 1 content.",
+                    text = "Пост с вложениями.",
                     replyOwnerId = 2,
                     replyPostId = 5,
-                    friendsOnly = true,
                     attachments = listOf(
                         PhotoAttachment(
                             photo = Photo(
@@ -138,8 +156,6 @@ class WallServiceTestAddPost {
                     ),
                     comments = Comments(
                         count = 3,
-                        canPost = true,
-                        groupsCanPost = false
                     ),
                     likes = Likes(
                         count = 2,
@@ -148,53 +164,27 @@ class WallServiceTestAddPost {
                         canPublish = true
                     ),
                     reposts = Reposts(
-                        count = 4,
-                        userReposted = true
+                        count = 4
                     ),
                     views = Views(
                         count = 123
                     ),
-                    postType = PostType.POST,
-                    isFavorite = true
-                ), 0
-            ),
-            Arguments.of(
-                Post(), 0
-            ),
-            Arguments.of(
-                Post(
-                    id = 6545,
-                    ownerId = 21,
-                    fromId = 32,
-                    date = 1759095462,
-                    text = "Comment 1",
-                    replyOwnerId = 1,
-                    replyPostId = 1,
-                    friendsOnly = true,
-                    comments = Comments(),
-                    likes = Likes(),
-                    reposts = Reposts(),
-                    views = Views(
-                        count = 123
-                    ),
-                    postType = PostType.REPOST,
+                    postType = PostType.POSTPONE,
                     isFavorite = true
                 ), 0
             ),
             Arguments.of(
                 Post(
-                    id = 4,
                     ownerId = 1,
                     fromId = 1,
                     date = 1759092958,
-                    text = "Reply content.",
+                    text = "Ответный пост.",
+                    viewPrivacy = Privacy.HUMANS_ONLY,
                     replyOwnerId = 1,
                     replyPostId = 1,
-                    friendsOnly = true,
                     comments = Comments(
                         count = 1,
-                        canPost = true,
-                        groupsCanPost = true
+                        commentPrivacy = Privacy.HUMANS_ONLY
                     ),
                     likes = Likes(
                         count = 10,
