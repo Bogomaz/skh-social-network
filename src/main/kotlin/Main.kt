@@ -10,25 +10,20 @@ import ru.netology.model.File
 import ru.netology.model.FileAttachment
 import ru.netology.model.Geotag
 import ru.netology.model.GeotagAttachment
-import ru.netology.model.Likes
 import ru.netology.model.Note
 import ru.netology.model.Photo
 import ru.netology.model.PhotoAttachment
 import ru.netology.model.Place
 import ru.netology.model.PlaceType
 import ru.netology.model.Post
-import ru.netology.model.PostType
 import ru.netology.model.Privacy
 import ru.netology.model.Report
-import ru.netology.model.Reposts
 import ru.netology.model.Sticker
 import ru.netology.model.StickerAttachment
 import ru.netology.model.Video
 import ru.netology.model.VideoAttachment
-import ru.netology.model.Views
 import ru.netology.service.NoteService
 import ru.netology.service.WallService
-import kotlin.Int
 
 
 fun main() {
@@ -162,8 +157,27 @@ fun main() {
     )
 
     val service = NoteService<Note>()
-    val id = service.add(note1)
-    println(id)
 
+    val notes = listOf(
+        // text, title, viewPrivacy, commentPrivacy
+        arrayOf("Hello, Kotlin!", "I learn Kotlin", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY),
+        arrayOf("Это моя заметка. Комментируйте и читайте", "Привет, Интернет!", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY),
+        arrayOf("Драконы любят рыбу, мясо, тепло и свежую траву.", "Как приручить дракона", Privacy.HUMANS_ONLY, Privacy.FRIENDS_ONLY),
+        arrayOf("Это моя заметка. Комментируйте и читайте", "Привет, Интернет!", Privacy.HUMANS_ONLY, Privacy.HUMANS_ONLY),
+        arrayOf("Побывал в тех местах, куда не светит солнце.", "Как я провёл лето", Privacy.USER_ONLY, Privacy.USER_ONLY),
+        arrayOf("Коты и собаки иногда хорошо уживаются вместе", "Прикладное котоводство", Privacy.FRIENDS_OF_FRIENDS, Privacy.FRIENDS_OF_FRIENDS),
+        arrayOf("Я не знаю, что написать, но начну.", "Боязнь белого листа.", Privacy.HUMANS_ONLY, Privacy.HUMANS_ONLY)
+    )
 
+    val results = notes.map{(text, title, viewPrivacy, commentPrivacy) ->
+        service.add(
+            newText = text as String,
+            newTitle = title as String,
+            newViewPrivacy = viewPrivacy as Privacy,
+            newCommentPrivacy = commentPrivacy as Privacy
+        )
+    }
+    val ids = listOf(1, 3, 5)
+
+    println(service.get(ids, 0))
 }

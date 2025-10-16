@@ -1,7 +1,6 @@
-package service
+package service.wallservice
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import ru.netology.exception.PostNotFoundException
 import ru.netology.model.Comment

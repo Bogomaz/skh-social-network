@@ -1,44 +1,71 @@
 package ru.netology.service
 
 import ru.netology.exception.NoteNotFoundException
-import ru.netology.model.Attachment
+import ru.netology.exception.OwnerNotFoundException
+import ru.netology.model.Comment
 import ru.netology.model.Comments
-import ru.netology.model.Likes
 import ru.netology.model.Note
 import ru.netology.model.Privacy
-import ru.netology.model.Record
-import ru.netology.model.Reposts
-import ru.netology.model.Views
+
 
 @Suppress("UNCHECKED_CAST")
 class NoteService<T : Note>() {
     private val notes = mutableListOf<T>()
     private var nextId = 1
 
-    //Добавляет заметку и возвращает её id
-    fun add(note: T): Int {
-        val newNoteWithId = note.copy(id = nextId++) as T
-        notes.add(newNoteWithId)
-        return newNoteWithId.id
+    //Добавление заметки в коллекцию
+    fun add(
+        newText: String, // Текст заметки.
+        newTitle: String, // Заголовок заметки.
+        newViewPrivacy: Privacy = Privacy.EVERYONE, //Уровень доступа к заметке.
+        newCommentPrivacy: Privacy = Privacy.EVERYONE // Уровень доступа к комментированию
+    ): Int {
+        val note = Note(
+            id = nextId++,
+            text = newText,
+            title = newTitle,
+            viewPrivacy = newViewPrivacy,
+            comments = Comments(
+                commentPrivacy = newCommentPrivacy
+            )
+        )
+        notes.add(note as T)
+        return note.id
+    }
+
+    //Возвращает заметку по её id.
+    fun getById(noteId: Int, ownerId: Int): Note {
+        val note = notes.firstOrNull() { it.id == noteId && it.ownerId == ownerId}
+        if (note == null) {
+            throw NoteNotFoundException("This note doesn't exist")
+        }
+        return note;
     }
 
     //Возвращает список заметок.
     fun get(
-        noteIds: List<Int>? = null,
-        userId: Int? = null,
-        offset: Int = 0,
+        noteIds: List<Int>,
+        userId: Int? = 0,
         count: Int = Int.MAX_VALUE,
         sort: Int = 0
     ): List<T> {
         var result = notes.asSequence()
 
-        // Фильтрация по userId, если задан
+        // Проверка наличия пользователя и фильтрация
         if (userId != null) {
+            if (notes.none { it.ownerId == userId }) {
+                throw OwnerNotFoundException("User $userId does not exist")
+            }
             result = result.filter { it.ownerId == userId }
         }
 
-        // Фильтрация по noteIds, если заданы
-        if (noteIds != null && noteIds.isNotEmpty()) {
+        // Проверка наличия заметок и фильтрация по noteIds
+        if (noteIds.isNotEmpty()) {
+            val existingIds = notes.map { it.id }.toSet()
+            val missingIds = noteIds.filter { it !in existingIds }
+            if (missingIds.isNotEmpty()) {
+                throw NoteNotFoundException("Notes with ids $missingIds not found")
+            }
             result = result.filter { it.id in noteIds }
         }
 
@@ -49,16 +76,7 @@ class NoteService<T : Note>() {
         }
 
         // Смещение и ограничение по количеству
-        return result.drop(offset).take(count).toList()
-    }
-
-    //Возвращает заметку по её id.
-    fun getById(noteId: Int): Note {
-        val note = notes.firstOrNull() { it.id == noteId }
-        if (note == null) {
-            throw NoteNotFoundException("This note doesn't exist")
-        }
-        return note;
+        return result.take(count).toList()
     }
 
     //Удаляет заметку текущего пользователя.
@@ -70,10 +88,30 @@ class NoteService<T : Note>() {
         return 1
     }
 
-
     //Редактирует заметку текущего пользователя.
-    fun edit() {
-
+    fun edit(
+        noteId: Int,
+        title: String,
+        text: String,
+        viewPrivacy: Privacy,
+        commentPrivacy: Privacy,
+    ): Int{
+        val note = notes.firstOrNull() { it.id == noteId}
+        if (note == null) {
+            throw NoteNotFoundException("This note doesn't exist")
+        }else{
+            val oldNote = notes[noteId]
+            val updatedNote = oldNote.copy(
+                title = title,
+                text = text,
+                viewPrivacy = viewPrivacy,
+                comments = Comments(
+                    commentPrivacy = commentPrivacy
+                )
+            )
+            notes[noteId] = updatedNote as T
+        }
+        return 1;
     }
 
     //Добавляет новый комментарий к заметке.
