@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.netology.exception.NoteNotFoundException
 import ru.netology.exception.OwnerNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Note
-import ru.netology.model.Privacy
 import ru.netology.service.NoteService
+import service.TestNotesToAdd
 
-class GetNoteServiceTest {
+class GetNoteTest {
     val noteService = NoteService<Note>()
 
     // Проверяем, возвращается ли запрошенный список записей
@@ -49,7 +49,7 @@ class GetNoteServiceTest {
                 newCommentPrivacy = params.commentPrivacy
             )
         }
-        Assertions.assertThrows(NoteNotFoundException::class.java) {
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
             noteService.get(listOf(1, 2, 999))
         }
     }

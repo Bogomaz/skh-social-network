@@ -9,7 +9,6 @@ import ru.netology.model.PhotoAttachment
 class CommentTest {
     val commentFullFilled = Comment(
         id = 1,
-        postId = 2, // Идентификатор поста
         fromId = 1, //Идентификатор автора комментария
         date = 1759661150, //Дата создания комментария в формате Unixtime
         text = "It's cool!", //Текст комментария
@@ -33,11 +32,6 @@ class CommentTest {
         Assertions.assertEquals(1, result)
     }
 
-    @Test
-    fun getPostId() {
-        val result = commentFullFilled.postId;
-        Assertions.assertEquals(2, result)
-    }
 
     @Test
     fun getFromId() {

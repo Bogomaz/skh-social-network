@@ -2,13 +2,14 @@ package service.noteservice
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.netology.exception.NoteNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Note
 import ru.netology.model.Privacy
 import ru.netology.service.NoteService
+import service.TestNotesToAdd
 
-class EditNoteServiceTest {
-    //Удаление заметки по id
+class EditNoteTest {
+    //Редактирование  заметки по id
     @Test
     fun editExistingNoteById(){
         val noteService = NoteService<Note>()
@@ -21,10 +22,12 @@ class EditNoteServiceTest {
             )
         }
         val result = noteService.edit(3, "Hello", "I'm an editor", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY)
-        Assertions.assertEquals(1, result)
+        Assertions.assertEquals("Hello", result.title)
+        Assertions.assertEquals("I'm an editor", result.text)
+
     }
 
-    //Попытка удалить заметку, которой нет
+    //Попытка отредактировать заметку, которой нет
     @Test
     fun editNonExistingNote(){
         val noteService = NoteService<Note>()
@@ -36,7 +39,7 @@ class EditNoteServiceTest {
                 newCommentPrivacy = params.commentPrivacy
             )
         }
-        Assertions.assertThrows(NoteNotFoundException::class.java) {
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
             noteService.edit(999, "Hello", "I'm an editor", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY)
         }
     }

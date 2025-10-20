@@ -28,7 +28,7 @@ import ru.netology.model.Views
 import ru.netology.service.WallService
 import java.util.stream.Stream
 
-class WallServiceTestAddPost {
+class AddPostTest {
     @BeforeEach
     fun clearBeforeTest() {
         WallService.clear()

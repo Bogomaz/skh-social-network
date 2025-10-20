@@ -1,15 +1,13 @@
 package ru.netology.service
 
-import ru.netology.exception.CommentNotFoundException
-import ru.netology.exception.PostNotFoundException
-import ru.netology.exception.ReasonNotFoundException
+import ru.netology.exception.NoteNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Comment
+import ru.netology.model.Note
 import ru.netology.model.Post
-import ru.netology.model.Reason
-import ru.netology.model.Report
 
 object WallService {
-    private var posts = emptyArray<Post>()
+    var posts = emptyArray<Post>()
     private var currentPostId = 1
 
     private var comments = emptyArray<Comment>()
@@ -20,6 +18,15 @@ object WallService {
         val newPost = post.copy(id = currentPostId++)
         posts += newPost
         return posts.last();
+    }
+
+    //Возвращает пост по id.
+    fun getById(postId: Int): Post {
+        val post = posts.firstOrNull() { it.id == postId}
+        if (post == null) {
+            throw RecordNotFoundException("The post $postId doesn't exist")
+        }
+        return post;
     }
 
     // Находит в массиве запись с тем же id, что и у post и обновлять все свойства;
@@ -38,31 +45,5 @@ object WallService {
     fun clear() {
         posts = emptyArray()
         currentPostId = 1
-    }
-
-    //Проверяет, есть ли пост с указанным Id. Если есть - добавляет комментарий в массив комментариев
-    // И возвращает добавленный комментарий.
-    fun createComment(postId: Int, comment: Comment): Comment {
-        for (post in posts) {
-            if (post.id == postId) {
-                val newComment = comment.copy(id = currentCommentId++)
-                comments += newComment
-                return newComment
-            }
-        }
-        throw PostNotFoundException("This post does not exist")
-    }
-
-    //Принимает жалобу на комментарий. Если неугодный комментарий есть и причина жалобы обоснована - возвращает 1
-    // Если нет - генерит исключение.
-    fun reportComment(report: Report): Int {
-        val commentExists = comments.any { it.id == report.commentId }
-        val reasonExists = Reason.entries.any { it.code == report.reason }
-        if(!commentExists){
-            throw CommentNotFoundException("This comment does not exist")
-        } else if(!reasonExists){
-            throw ReasonNotFoundException(message = "You can't report a comment for this reason.")
-        }
-        return 1
     }
 }

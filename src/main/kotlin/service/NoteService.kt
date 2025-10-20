@@ -1,8 +1,7 @@
 package ru.netology.service
 
-import ru.netology.exception.NoteNotFoundException
 import ru.netology.exception.OwnerNotFoundException
-import ru.netology.model.Comment
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Comments
 import ru.netology.model.Note
 import ru.netology.model.Privacy
@@ -34,10 +33,20 @@ class NoteService<T : Note>() {
     }
 
     //Возвращает заметку по её id.
-    fun getById(noteId: Int, ownerId: Int): Note {
+    fun getById(noteId: Int): Note {
+        val note = notes.firstOrNull() { it.id == noteId}
+        if (note == null) {
+            throw RecordNotFoundException("The note  $noteId doesn't exist")
+        }
+        return note;
+    }
+
+    //Возвращает заметку по её id.
+    @Throws(RecordNotFoundException::class)
+    fun getByIdAndOwner(noteId: Int, ownerId: Int): Note {
         val note = notes.firstOrNull() { it.id == noteId && it.ownerId == ownerId}
         if (note == null) {
-            throw NoteNotFoundException("This note doesn't exist")
+            throw RecordNotFoundException("The note $noteId non exists")
         }
         return note;
     }
@@ -64,7 +73,7 @@ class NoteService<T : Note>() {
             val existingIds = notes.map { it.id }.toSet()
             val missingIds = noteIds.filter { it !in existingIds }
             if (missingIds.isNotEmpty()) {
-                throw NoteNotFoundException("Notes with ids $missingIds not found")
+                throw RecordNotFoundException("Notes with ids $missingIds not found")
             }
             result = result.filter { it.id in noteIds }
         }
@@ -83,7 +92,7 @@ class NoteService<T : Note>() {
     fun delete(noteId: Int): Int {
         val removed = notes.removeIf { it.id == noteId }
         if (!removed) {
-            throw NoteNotFoundException("This note doesn't exist")
+            throw RecordNotFoundException("This note doesn't exist")
         }
         return 1
     }
@@ -95,47 +104,19 @@ class NoteService<T : Note>() {
         text: String,
         viewPrivacy: Privacy,
         commentPrivacy: Privacy,
-    ): Int{
-        val note = notes.firstOrNull() { it.id == noteId}
-        if (note == null) {
-            throw NoteNotFoundException("This note doesn't exist")
-        }else{
-            val oldNote = notes[noteId]
-            val updatedNote = oldNote.copy(
+    ): Note {
+        val index = notes.indexOfFirst { it.id == noteId }
+        return if (index == -1) {
+            throw RecordNotFoundException("This note $noteId non exists")
+        } else {
+            val oldNote = notes[index]
+            notes[index] = oldNote.copy(
                 title = title,
                 text = text,
                 viewPrivacy = viewPrivacy,
-                comments = Comments(
-                    commentPrivacy = commentPrivacy
-                )
-            )
-            notes[noteId] = updatedNote as T
+                comments = Comments(commentPrivacy = commentPrivacy)
+            ) as T
+            notes[index]
         }
-        return 1;
-    }
-
-    //Добавляет новый комментарий к заметке.
-    fun createComment() {
-
-    }
-
-    //Редактирует указанный комментарий у заметки.
-    fun editComment() {
-
-    }
-
-    //Возвращает список комментариев к заметке.
-    fun getComments() {
-
-    }
-
-    // Восстанавливает удалённый комментарий.
-    fun restoreComment() {
-
-    }
-
-    //Удаляет комментарий к заметке.
-    fun deleteComment() {
-
     }
 }

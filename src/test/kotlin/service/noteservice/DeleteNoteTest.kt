@@ -2,11 +2,12 @@ package service.noteservice
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.netology.exception.NoteNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Note
 import ru.netology.service.NoteService
+import service.TestNotesToAdd
 
-class DeleteNoteServiceTest {
+class DeleteNoteTest {
     //Удаление заметки по Id
     @Test
     fun deleteNotesId() {
@@ -35,7 +36,7 @@ class DeleteNoteServiceTest {
                 newCommentPrivacy = params.commentPrivacy
             )
         }
-        Assertions.assertThrows(NoteNotFoundException::class.java) {
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
             noteService.delete(999)
         }
     }

@@ -1,0 +1,44 @@
+package service.noteservice
+
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import ru.netology.exception.RecordNotFoundException
+import ru.netology.model.Note
+import ru.netology.service.NoteService
+import service.TestNotesToAdd
+
+class GetByIdNoteTest {
+    val noteService = NoteService<Note>()
+
+    //Получение существующей заметки по id
+    @Test
+    fun getByIdExistingNoteReturnsNote() {
+        val notes = TestNotesToAdd.notes.map { params ->
+            noteService.add(
+                newText = params.text,
+                newTitle = params.title,
+                newViewPrivacy = params.viewPrivacy,
+                newCommentPrivacy = params.commentPrivacy
+            )
+        }
+        val note = noteService.getById(3)
+        Assertions.assertEquals("Как приручить дракона", note.title)
+    }
+
+    //Попытка получить несуществующую заметку
+    @Test
+    fun getByIdNonExistingNoteThrows() {
+        val notes = TestNotesToAdd.notes.map { params ->
+            noteService.add(
+                newText = params.text,
+                newTitle = params.title,
+                newViewPrivacy = params.viewPrivacy,
+                newCommentPrivacy = params.commentPrivacy
+            )
+        }
+
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
+            noteService.getById(100)
+        }
+    }
+}

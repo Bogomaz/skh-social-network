@@ -12,7 +12,9 @@ abstract class Record (
     open val views: Views?, // просмотры
     open val reposts: Reposts?, // репосты
     open val attachments: List<Attachment>?
-)
+){
+
+}
 
 enum class Privacy{
     EVERYONE, //все пользователи и сообщества,

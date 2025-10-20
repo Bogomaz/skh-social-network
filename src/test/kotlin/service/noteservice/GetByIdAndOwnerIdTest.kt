@@ -2,15 +2,17 @@ package service.noteservice
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.netology.exception.NoteNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Note
 import ru.netology.service.NoteService
+import service.TestNotesToAdd
 
-class GetByIdNoteServiceTest {
+class GetByIdAndOwnerIdTest {
+    val noteService = NoteService<Note>()
+
     //Получение существующей заметки по id и ownerId
     @Test
     fun getByIdExistingNoteReturnsNote() {
-        val noteService = NoteService<Note>()
         val notes = TestNotesToAdd.notes.map { params ->
             noteService.add(
                 newText = params.text,
@@ -19,14 +21,13 @@ class GetByIdNoteServiceTest {
                 newCommentPrivacy = params.commentPrivacy
             )
         }
-        val note = noteService.getById(3, ownerId = 0)
+        val note = noteService.getByIdAndOwner(3, ownerId = 0)
         Assertions.assertEquals("Как приручить дракона", note.title)
     }
 
     //Попытка получить несуществующую заметку
     @Test
     fun getByIdNonExistingNoteThrows() {
-        val noteService = NoteService<Note>()
         val notes = TestNotesToAdd.notes.map { params ->
             noteService.add(
                 newText = params.text,
@@ -36,15 +37,14 @@ class GetByIdNoteServiceTest {
             )
         }
 
-        Assertions.assertThrows(NoteNotFoundException::class.java) {
-            noteService.getById(100, ownerId = 0)
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
+            noteService.getByIdAndOwner(100, ownerId = 0)
         }
     }
 
     //Попытка получить заметку несуществующего владельца
     @Test
     fun getByIdNonExistingOwnerThrows() {
-        val noteService = NoteService<Note>()
         val notes = TestNotesToAdd.notes.map { params ->
             noteService.add(
                 newText = params.text,
@@ -54,8 +54,8 @@ class GetByIdNoteServiceTest {
             )
         }
 
-        Assertions.assertThrows(NoteNotFoundException::class.java) {
-            noteService.getById(3, ownerId = 1)
+        Assertions.assertThrows(RecordNotFoundException::class.java) {
+            noteService.getByIdAndOwner(3, ownerId = 1)
         }
     }
 }

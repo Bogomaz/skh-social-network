@@ -1,4 +1,4 @@
-package service.noteservice
+package service
 
 import ru.netology.model.Privacy
 

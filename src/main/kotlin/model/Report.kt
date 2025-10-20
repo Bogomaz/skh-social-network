@@ -3,7 +3,6 @@ package ru.netology.model
 data class Report(
     val id: Int,
     val commentId: Int,
-    val ownerId: Int,
     val reason: Int
 )
 

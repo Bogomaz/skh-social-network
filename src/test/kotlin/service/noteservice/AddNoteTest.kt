@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import ru.netology.model.Note
 import ru.netology.service.NoteService
+import service.TestNotesToAdd
 
-class AddNoteServiceTest {
+class AddNoteTest {
     //Добавление нескольких заметок и проверка идентификторов
     @Test
     fun addMultipleNotesIdIncrement() {

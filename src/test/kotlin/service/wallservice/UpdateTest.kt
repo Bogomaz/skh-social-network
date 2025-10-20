@@ -23,7 +23,7 @@ import ru.netology.model.VideoAttachment
 import ru.netology.model.Views
 import ru.netology.service.WallService
 
-class WallServiceTestUpdate {
+class UpdateTest {
     @Test
     fun updateExist() {
         val post = Post(

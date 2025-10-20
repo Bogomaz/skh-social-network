@@ -1,7 +1,7 @@
 package ru.netology
 
 import ru.netology.exception.CommentNotFoundException
-import ru.netology.exception.PostNotFoundException
+import ru.netology.exception.RecordNotFoundException
 import ru.netology.exception.ReasonNotFoundException
 import ru.netology.model.Comment
 import ru.netology.model.Comments
@@ -100,7 +100,6 @@ fun main() {
 
     val comment = Comment(
         id = 0,
-        postId = addedPost.id, // Идентификатор поста
         fromId = 1, //Идентификатор автора комментария
         date = 1759661150, //Дата создания комментария в формате Unixtime
         text = "It's cool!.", //Текст комментария
@@ -121,23 +120,8 @@ fun main() {
     val report = Report(
         id = 1,
         commentId = 1,
-        ownerId = 2,
         reason = 8
     )
-
-    try {
-        println(WallService.createComment(comment.postId, comment))
-    } catch (e: PostNotFoundException) {
-        println(e.message)
-    }
-
-    try {
-        println(WallService.reportComment(report))
-    } catch (e: CommentNotFoundException) {
-        println(e.message)
-    }catch (e: ReasonNotFoundException){
-        println(e.message)
-    }
 
     val note1 = Note(
         id = 0,
