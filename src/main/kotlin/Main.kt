@@ -11,6 +11,7 @@ import ru.netology.model.FileAttachment
 import ru.netology.model.Geotag
 import ru.netology.model.GeotagAttachment
 import ru.netology.model.Note
+import ru.netology.model.ParentType
 import ru.netology.model.Photo
 import ru.netology.model.PhotoAttachment
 import ru.netology.model.Place
@@ -22,20 +23,17 @@ import ru.netology.model.Sticker
 import ru.netology.model.StickerAttachment
 import ru.netology.model.Video
 import ru.netology.model.VideoAttachment
+import ru.netology.service.CommentService
 import ru.netology.service.NoteService
 import ru.netology.service.WallService
 
 
 fun main() {
-
+    val noteService = NoteService<Note>()
+    val commentService = CommentService(WallService, noteService)
     val post = Post(
-        id = 0,
-        ownerId = 10,
-        fromId = 2,
         date = 1759092958,
         text = "Post 1 content.",
-        replyOwnerId = 2,
-        replyPostId = 5,
         attachments = listOf(
             PhotoAttachment(
                 photo = Photo(
@@ -94,11 +92,16 @@ fun main() {
             ),
         ),
     )
-
-    val addedPost = WallService.add(post)
-    println(addedPost)
-
-    val comment = Comment(
+    val note = Note(
+        text = "I learn Kotlin",
+        title = "Hello, Kotlin!",
+        viewPrivacy = Privacy.FRIENDS_ONLY,
+        comments = Comments(
+            commentPrivacy = Privacy.FRIENDS_ONLY
+        )
+    )
+    val comment1 = Comment(text = "Hello! I read your blog.")
+    val comment2 = Comment(
         id = 0,
         fromId = 1, //Идентификатор автора комментария
         date = 1759661150, //Дата создания комментария в формате Unixtime
@@ -116,52 +119,78 @@ fun main() {
             )
         )
     )
+    //Добавим тестовый пост
+    val addedPost = WallService.add(post)
 
+    //Добавим тестовую заметку
+    val addedNote = noteService.add(note.text, note.title, Privacy.FRIENDS_ONLY)
+
+    //Добавим комментарий к посту, и к заметке
+    val postComment1 = commentService.addComment(1, ParentType.POST, comment1)
+    val postComment2 = commentService.addComment(1, ParentType.POST, comment2)
+
+    val noteComment1 = commentService.addComment(1, ParentType.NOTE, comment1)
+    val noteComment2 = commentService.addComment(1, ParentType.NOTE, comment2)
+
+    println(addedPost)
+    println(addedNote)
+    println("Post comments: \n $postComment1 \n $postComment2")
+    println("Note comments: \n $noteComment1 \n $noteComment2")
+
+    //Пожалуемся на комментарий
     val report = Report(
         id = 1,
         commentId = 1,
         reason = 8
     )
 
-    val note1 = Note(
-        id = 0,
-        ownerId = 10,
-        fromId = 10,
-        date = 1759092958,
-        text = "Это моя заметка. Комментируйте и читайте",
-        viewPrivacy = Privacy.HUMANS_ONLY,
-        comments = Comments(
-            count = 0, //Количество комментариев к записи
-            readCommentsCount = 0, //Количество прочитанных комментариев.
-            commentPrivacy = Privacy.HUMANS_ONLY, //Уровень доступа к комментированию заметки.
-            canClose = true, // может ли текущий пользователь закрыть комментарии к записи;
-            canOpen = false // может ли текущий пользователь открыть комментарии к записи.
-        ),
-        title = "Привет, Интернет!"
-    )
+    println(commentService.reportComment(report))
 
-    val service = NoteService<Note>()
+//    val notes = listOf(
+//        // text, title, viewPrivacy, commentPrivacy
+//        arrayOf("Hello, Kotlin!", "I learn Kotlin", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY),
+//        arrayOf(
+//            "Это моя заметка. Комментируйте и читайте",
+//            "Привет, Интернет!",
+//            Privacy.FRIENDS_ONLY,
+//            Privacy.FRIENDS_ONLY
+//        ),
+//        arrayOf(
+//            "Драконы любят рыбу, мясо, тепло и свежую траву.",
+//            "Как приручить дракона",
+//            Privacy.HUMANS_ONLY,
+//            Privacy.FRIENDS_ONLY
+//        ),
+//        arrayOf(
+//            "Это моя заметка. Комментируйте и читайте",
+//            "Привет, Интернет!",
+//            Privacy.HUMANS_ONLY,
+//            Privacy.HUMANS_ONLY
+//        ),
+//        arrayOf(
+//            "Побывал в тех местах, куда не светит солнце.",
+//            "Как я провёл лето",
+//            Privacy.USER_ONLY,
+//            Privacy.USER_ONLY
+//        ),
+//        arrayOf(
+//            "Коты и собаки иногда хорошо уживаются вместе",
+//            "Прикладное котоводство",
+//            Privacy.FRIENDS_OF_FRIENDS,
+//            Privacy.FRIENDS_OF_FRIENDS
+//        ),
+//        arrayOf("Я не знаю, что написать, но начну.", "Боязнь белого листа.", Privacy.HUMANS_ONLY, Privacy.HUMANS_ONLY)
+//    )
+//
+//    val results = notes.map { (text, title, viewPrivacy, commentPrivacy) ->
+//        noteService.add(
+//            newText = text as String,
+//            newTitle = title as String,
+//            newViewPrivacy = viewPrivacy as Privacy,
+//            newCommentPrivacy = commentPrivacy as Privacy
+//        )
+//    }
+//    val ids = listOf(1, 3, 5)
 
-    val notes = listOf(
-        // text, title, viewPrivacy, commentPrivacy
-        arrayOf("Hello, Kotlin!", "I learn Kotlin", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY),
-        arrayOf("Это моя заметка. Комментируйте и читайте", "Привет, Интернет!", Privacy.FRIENDS_ONLY, Privacy.FRIENDS_ONLY),
-        arrayOf("Драконы любят рыбу, мясо, тепло и свежую траву.", "Как приручить дракона", Privacy.HUMANS_ONLY, Privacy.FRIENDS_ONLY),
-        arrayOf("Это моя заметка. Комментируйте и читайте", "Привет, Интернет!", Privacy.HUMANS_ONLY, Privacy.HUMANS_ONLY),
-        arrayOf("Побывал в тех местах, куда не светит солнце.", "Как я провёл лето", Privacy.USER_ONLY, Privacy.USER_ONLY),
-        arrayOf("Коты и собаки иногда хорошо уживаются вместе", "Прикладное котоводство", Privacy.FRIENDS_OF_FRIENDS, Privacy.FRIENDS_OF_FRIENDS),
-        arrayOf("Я не знаю, что написать, но начну.", "Боязнь белого листа.", Privacy.HUMANS_ONLY, Privacy.HUMANS_ONLY)
-    )
-
-    val results = notes.map{(text, title, viewPrivacy, commentPrivacy) ->
-        service.add(
-            newText = text as String,
-            newTitle = title as String,
-            newViewPrivacy = viewPrivacy as Privacy,
-            newCommentPrivacy = commentPrivacy as Privacy
-        )
-    }
-    val ids = listOf(1, 3, 5)
-
-    println(service.get(ids, 0))
+//    println(noteService.get(ids, 0))
 }

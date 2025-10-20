@@ -1,14 +1,11 @@
 package ru.netology.service
 
 import ru.netology.exception.CommentNotFoundException
-import ru.netology.exception.OwnerNotFoundException
 import ru.netology.exception.ReasonNotFoundException
-import ru.netology.exception.RecordNotFoundException
 import ru.netology.model.Comment
 import ru.netology.model.Note
 import ru.netology.model.ParentType
 import ru.netology.model.Reason
-import ru.netology.model.Record
 import ru.netology.model.Report
 import kotlin.collections.mutableListOf
 
@@ -19,7 +16,8 @@ class CommentService(
     private val comments = mutableListOf<Comment>()
     private var currentId = 1
 
-    //Проверяет, есть ли пост / заметка с указанным Id. Если есть - добавляет комментарий в массив комментариев
+    // Принимает id родительской заметки, тип заметки и объект Comment
+    // Проверяет, есть ли пост / заметка с указанным Id. Если есть - добавляет комментарий в массив комментариев
     // И возвращает добавленный комментарий.
     fun addComment(
         parentId: Int,
@@ -36,7 +34,9 @@ class CommentService(
         return comments.last()
     }
 
-    //Редактирует заметку текущего пользователя.
+    // Принимает id комментария
+    // Проверяет, есть комментарий, не удалён ли он
+    // Возвращает отредактированный комментарий, или генерирует исключение.
     fun editComment(
         commentId: Int,
         text: String,
@@ -54,7 +54,9 @@ class CommentService(
         return comments[index];
     }
 
-    //Получить все комментарии
+    // Принимает id родительской заметки и её тип
+    // Проверяет, существует ли эта заметка.
+    // ищет комментарии, относящиеся к этой заметке и возвращает список комментариев.
     fun getComments(
         parentId: Int,
         parentType: ParentType,
@@ -71,7 +73,9 @@ class CommentService(
         }
     }
 
-    // Присваивает комментарию флаг "Удалён"
+    // Принимает id комментария
+    // Проверяет, существует ли этот комментарий и не удалён ли он.
+    // Если находит - присваивает ему флаг "Удалён" если не находит - генерит исключение.
     fun deleteComment(commentId: Int): Boolean {
         val index = comments.indexOfFirst { it.id == commentId && !it.isDeleted }
         if (index == -1) {
@@ -83,8 +87,9 @@ class CommentService(
         }
     }
 
-    // Восстанавливает комментарий
-    // Присваивает комментарию флаг "Удалён"
+    // Принимает id комментария
+    // Проверяет, существует ли этот комментарий и удалён ли он.
+    // Если находит - снимает флаг "Удалён" если не находит - генерит исключение.
     fun restoreComment(commentId: Int): Boolean {
         val index = comments.indexOfFirst { it.id == commentId && it.isDeleted }
         if (index == -1) {
@@ -96,7 +101,8 @@ class CommentService(
         }
     }
 
-    //Принимает жалобу на комментарий. Если неугодный комментарий существует и причина жалобы обоснована - возвращает 1
+    // Принимает жалобу на комментарий.
+    // Если неугодный комментарий существует и причина жалобы обоснована - возвращает 1
     // Если нет - генерит исключение.
     fun reportComment(report: Report): Int {
         val commentExists = comments.any { it.id == report.commentId && !it.isDeleted }

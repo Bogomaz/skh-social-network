@@ -19,8 +19,8 @@ class AddNoteTest {
                 newCommentPrivacy = params.commentPrivacy
             )
         }
-        results.forEachIndexed { index, id ->
-            Assertions.assertEquals(index + 1, id)
+        results.forEachIndexed { index, results ->
+            Assertions.assertEquals(index + 1, results.id)
         }
     }
 

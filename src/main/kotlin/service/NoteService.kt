@@ -12,13 +12,15 @@ class NoteService<T : Note>() {
     private val notes = mutableListOf<T>()
     private var nextId = 1
 
-    //Добавление заметки в коллекцию
+    //Принимает содержимое заметки и права доступа
+    //Добавляет заметку
+    //Возвращает только что добавленную заметку
     fun add(
         newText: String, // Текст заметки.
         newTitle: String, // Заголовок заметки.
         newViewPrivacy: Privacy = Privacy.EVERYONE, //Уровень доступа к заметке.
         newCommentPrivacy: Privacy = Privacy.EVERYONE // Уровень доступа к комментированию
-    ): Int {
+    ): Note {
         val note = Note(
             id = nextId++,
             text = newText,
@@ -29,37 +31,31 @@ class NoteService<T : Note>() {
             )
         )
         notes.add(note as T)
-        return note.id
+        return notes.last()
     }
 
-    //Возвращает заметку по её id.
-    fun getById(noteId: Int): Note {
-        val note = notes.firstOrNull() { it.id == noteId}
-        if (note == null) {
-            throw RecordNotFoundException("The note  $noteId doesn't exist")
-        }
-        return note;
-    }
-
-    //Возвращает заметку по её id.
+    //Принимает id заметки и id пользователя-владельца
+    //Возвращает найденную заметку, или генерит исключение
     @Throws(RecordNotFoundException::class)
     fun getByIdAndOwner(noteId: Int, ownerId: Int): Note {
-        val note = notes.firstOrNull() { it.id == noteId && it.ownerId == ownerId}
+        val note = notes.firstOrNull() { it.id == noteId && it.ownerId == ownerId }
         if (note == null) {
             throw RecordNotFoundException("The note $noteId non exists")
         }
         return note;
     }
 
-    //Возвращает список заметок.
+    //Принимает набор идентификаторов заметок и id пользователя-владельца,
+    //Количество заметок, которое нужно вернуть
+    //Способ сортировки (1 - по возрастанию id, 0 - по убыванию id)
+    //Возвращает найденную заметку, или генерит исключение
     fun get(
         noteIds: List<Int>,
         userId: Int? = 0,
         count: Int = Int.MAX_VALUE,
-        sort: Int = 0
+        sort: Int = 1
     ): List<T> {
         var result = notes.asSequence()
-
         // Проверка наличия пользователя и фильтрация
         if (userId != null) {
             if (notes.none { it.ownerId == userId }) {
@@ -67,7 +63,6 @@ class NoteService<T : Note>() {
             }
             result = result.filter { it.ownerId == userId }
         }
-
         // Проверка наличия заметок и фильтрация по noteIds
         if (noteIds.isNotEmpty()) {
             val existingIds = notes.map { it.id }.toSet()
@@ -77,27 +72,26 @@ class NoteService<T : Note>() {
             }
             result = result.filter { it.id in noteIds }
         }
-
         // Сортировка
         result = when (sort) {
             1 -> result.sortedBy { it.id }      // по возрастанию id (или по дате, если есть поле date)
             else -> result.sortedByDescending { it.id } // по убыванию id
         }
-
-        // Смещение и ограничение по количеству
         return result.take(count).toList()
     }
 
-    //Удаляет заметку текущего пользователя.
-    fun delete(noteId: Int): Int {
-        val removed = notes.removeIf { it.id == noteId }
-        if (!removed) {
-            throw RecordNotFoundException("This note doesn't exist")
+    //Принимает id заметки
+    //Возвращает запрошенную заметку, или генерит исключение
+    fun getById(noteId: Int): Note {
+        val note = notes.firstOrNull() { it.id == noteId }
+        if (note == null) {
+            throw RecordNotFoundException("The note  $noteId doesn't exist")
         }
-        return 1
+        return note;
     }
 
-    //Редактирует заметку текущего пользователя.
+    //Принимает id заметки и содержимое, которое надо изменить,
+    //Возвращает отредактированную заметку или генерит исключение
     fun edit(
         noteId: Int,
         title: String,
@@ -119,4 +113,15 @@ class NoteService<T : Note>() {
             notes[index]
         }
     }
+
+    //Принимает id заметки
+    //Возвращает 1, если заметка успешно удалена
+    fun delete(noteId: Int): Int {
+        val removed = notes.removeIf { it.id == noteId }
+        if (!removed) {
+            throw RecordNotFoundException("This note doesn't exist")
+        }
+        return 1
+    }
+
 }
