@@ -6,7 +6,6 @@ data class Message (
     val senderId : Int, //Идентификатор отправителя
     val addresseeId: Int = 0, //Идентификатор получателя .
     var isRead : Boolean, //Прочитано сообщение адресатом, или нет.
-    var isDeleted: Boolean, //Удалено или нет
     val sendDate: Int, //Дата отправки
     val receiveDate: Int? = null, //Дата получения
     var readingDate: Int? = null, //Дата прочтения

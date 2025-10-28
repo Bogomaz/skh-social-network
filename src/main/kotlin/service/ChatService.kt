@@ -1,11 +1,10 @@
 package ru.netology.service
 
+import ru.netology.exception.ChatAlreadyExists
 import ru.netology.exception.ChatNotFoundException
 import ru.netology.exception.MessageNotFoundException
-import ru.netology.exception.UserNonFoundException
 import ru.netology.model.Chat
 import ru.netology.model.Message
-import ru.netology.model.User
 import kotlin.Int
 
 class ChatService() {
@@ -18,14 +17,20 @@ class ChatService() {
     //Создаёт новый чат между этими пользователями.
     //Возвращает созданный чат
     fun createChat(senderId: Int, addresseeId: Int): Chat {
-        val chat = Chat(
-            id = currentChatId++,
-            usersId = listOf(senderId, addresseeId),
-            messagesCount = 0,
-            unreadMessagesCount = 0, //Количество непрочитанных сообщений.
-        )
-        chats.add(chat)
-        return chats.last()
+        return chats.find { chat ->
+            chat.usersId.containsAll(listOf(senderId, addresseeId))
+        }?.let {
+            throw ChatAlreadyExists("User's $senderId and $addresseeId chat already exists")
+        } ?: run {
+            val newChat = Chat(
+                id = currentChatId++,
+                usersId = listOf(senderId, addresseeId),
+                messagesCount = 0,
+                unreadMessagesCount = 0
+            )
+            chats.add(newChat)
+            newChat
+        }
     }
 
     //Принимает идентификатор отправителя и идентификатор адресата,
@@ -33,8 +38,7 @@ class ChatService() {
     //Если есть - возвращает идентификатор чата
     fun findChat(senderId: Int, addresseeId: Int): Chat? {
         return chats.find { chat ->
-            chat.usersId.size == 2 &&
-                    chat.usersId.containsAll(listOf(senderId, addresseeId))
+            chat.usersId.containsAll(listOf(senderId, addresseeId))
         }
     }
 
@@ -52,7 +56,7 @@ class ChatService() {
         val userChats = getChatList(userId)
         return userChats.count { chat ->
             messages.any { msg ->
-                msg.chatId == chat.id && !msg.isRead && !msg.isDeleted
+                msg.chatId == chat.id && !msg.isRead
             }
         }
     }
@@ -61,46 +65,34 @@ class ChatService() {
     //Ищет, есть ли уже чат с такой парой пользователей.
     //Если есть добавляет сообщение в чат. Если нет - сначала создаёт чат, потом добавляет туда сообщение
     fun addMessageToChat(senderId: Int, addresseeId: Int, text: String): Message {
-
         //Ищем чат между этими пользователями. Если чат не найден, то создаём его
-        var chat = findChat(senderId, addresseeId)
-        if (chat == null) {
-            chat = createChat(senderId, addresseeId)
-        }
-
-        // если чат был удалён - восстанавливаем его (но сообщения не восстанавливаем)
-        if (chat.isDeleted) {
-            chat = chat.copy(isDeleted = false)
-        }
-        // увеличиваем количество сообщений в чате
-        chat.messagesCount++
-        chat.unreadMessagesCount++
-
-        // обновляем чат в коллекции чатов
+        var chat = findChat(senderId, addresseeId) ?: createChat(senderId, addresseeId)
         val index = chats.indexOfFirst { it.id == chat.id }
-        chats[index] = chat
+        chats[index] = chats[index].apply {
+            isDeleted = false
+            messagesCount++
+            unreadMessagesCount++
+        }
 
-        //создаём и возвращаем добавленное сообщение
-        messages.add(createMessage(chat.id, senderId, addresseeId, text))
-        return messages.last()
+        val message = createMessage(chat.id, senderId, addresseeId, text)
+        messages.add(message)
+        return message
     }
 
     //Принимает id чата, в который надо добавить сообщение, id отправителя/получателя, текст сообщения
     //создаёт объект Сообщение и возвращает его.
     fun createMessage(chatId: Int, senderId: Int, addresseeId: Int, text: String): Message {
-        val message = Message(
+        return Message(
             id = currentMessageId++,
             chatId = chatId,
             senderId = senderId,
             addresseeId = addresseeId,
             isRead = false,
-            isDeleted = false,
             sendDate = (System.currentTimeMillis() / 1000).toInt(),
             receiveDate = (System.currentTimeMillis() / 1000).toInt(),
             readingDate = null,
             text = text,
         )
-        return message
     }
 
     //Принимает id сообщения и удаляет его, если оно ещё не удалено
@@ -125,7 +117,7 @@ class ChatService() {
         id: Int,
         text: String,
     ): Message {
-        val index = messages.indexOfFirst { it.id == id && !it.isDeleted }
+        val index = messages.indexOfFirst { it.id == id}
         if (index == -1) throw MessageNotFoundException("Message $id non exists")
         messages[index].text = text
         return messages[index]
@@ -136,16 +128,13 @@ class ChatService() {
     //Возвращает список сообщений, упорядоченных по дате.
     fun getAllMessages(collocutor1: Int, collocutor2: Int, count: Int = Int.MAX_VALUE): List<Message> {
         val chat = findChat(collocutor1, collocutor2) ?: throw ChatNotFoundException("Chat non exists")
-        val result = messages
-            .filter { it.chatId == chat.id && !it.isDeleted }
+        return messages
+            .filter { it.chatId == chat.id }
             .sortedBy { it.sendDate }
             .take(count)
-
-        // Помечаем все сообщения как прочитанные
-        result.forEach { it.isRead = true }
-
-        return result
+            .onEach { it.isRead = true }
     }
+
 
     //Принимает идентификатор чата,
     //Выбирает все сообщения с меткой unread = true
@@ -154,8 +143,7 @@ class ChatService() {
         val chat = findChat(senderId, addresseeId) ?: throw ChatNotFoundException("Chat non exists")
         return messages.filter {
             it.chatId == chat.id &&
-                    !it.isRead &&
-                    !it.isDeleted
+                    !it.isRead
         }.size
     }
 
